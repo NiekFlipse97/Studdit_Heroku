@@ -9,6 +9,12 @@ mongoose.connect('mongodb://localhost/' + config.dbName, {useNewUrlParser: true}
 mongoose.connection
     .once('open', () => {
         console.log('Message:', 'The ' + config.dbName + ' database is connected');
+
+        const port = 27017;
+
+        app.listen(port, function(){
+            console.log('http://localhost: ' + port);
+        });
     })
     .on('error', (error) => {
         console.warn('Warning', error);
@@ -28,7 +34,5 @@ app.use(express.static(__dirname + '/public'));
 // app.use('/api', require('./routes/Login'));
 // app.use('/api/register', require('./routes/Register'));
 
-// app.listen(port, function(){
-//     console.log('http://localhost: ' + port);
-// });
+
 module.exports = app;
