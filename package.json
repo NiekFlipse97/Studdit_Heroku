@@ -18,6 +18,7 @@
   "homepage": "https://github.com/KNZegelaar/Studdit#readme",
   "dependencies": {
     "express": "^4.16.4",
+    "isemail": "^3.2.0",
     "jwt-simple": "^0.5.5",
     "mocha": "^5.2.0",
     "moment": "^2.22.2",
