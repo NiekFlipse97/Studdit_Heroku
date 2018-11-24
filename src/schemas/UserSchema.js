@@ -7,6 +7,10 @@ const UserSchema = new Schema({
     password: String,
     
     // A user can be friends with other users.
+    friends: [{
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    }]
 });
 
 // Create the user collection with the UserSchema.
