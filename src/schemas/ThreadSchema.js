@@ -4,7 +4,11 @@ const Schema = mongoose.Schema;
 // Create the schema for the Thread table/collection.
 const ThreadSchema = new Schema({
     title: String,
-    content: String
+    content: String,
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'comment'
+    }]
 });
 
 // Define the thread collection and add the ThreadSchema.

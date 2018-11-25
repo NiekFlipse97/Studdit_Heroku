@@ -10,6 +10,10 @@ const UserSchema = new Schema({
     friends: [{
         type: Schema.Types.ObjectId,
         ref: 'user'
+    }],
+    threads: [{
+        type: Schema.Types.ObjectId,
+        ref: 'thread'
     }]
 });
 
