@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../authentication/authentication');
 const apiErrors = require("../errorMessages/apiErrors.js");
 const Isemail = require('isemail');
+const repo = require('../dataAccess/repository');
 
 router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) => {
     console.log("Validate Token");
@@ -26,24 +27,26 @@ router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) 
 
 router.route("/register").post((request, response) => {
     const registration = request.body;
-    if(!CheckObjects.isValidRegistration(registration)){
+    if (!CheckObjects.isValidRegistration(registration)) {
         const error = apiErrors.wrongRequestBodyProperties;
         response.status(error.code).json(error);
         return;
     }
 
     // Get the users information to store in the database.
-    const firstName = registration.firstname;
-    const lastName = registration.lastname;
+    const username = registration.username;
     const email = registration.email;
     const password = registration.password;
 
-    response.status(200).json({"TEST: ": "The register check works"})
+    repo.createUser(username, email, password, (error, result) => {
+        if (error) response.status(error.code || 500).json(error);
+        else response.status(200).json(result);
+    });
 });
 
 router.route("/login").post((request, response) => {
     const loginObject = request.body;
-    if(!CheckObjects.isValidLogin(loginObject)){
+    if (!CheckObjects.isValidLogin(loginObject)) {
         const error = apiErrors.wrongRequestBodyProperties;
         response.status(error.code).json(error);
         return;
@@ -61,22 +64,9 @@ router.route("/login").post((request, response) => {
     // });
 });
 
-function login(email, password, callback){
-    // Check in database for matching username and password.
-    // db.query(`SELECT * FROM user WHERE Email = "${email}" AND Password = "${password}"`, (error, rows, fields) => {
-    //     if(error) console.log(`Error on login query: ${error.message}, ${error.sqlMessage}`);
-    //     if(error) callback(error, null);
-    //     else if(rows.length == 0) callback(apiErrors.wrongRequestBodyProperties, null);
-    //     else callback(null, {
-    //             token: auth.encodeToken(email),
-    //             email: email
-    //         });
-    // });
-}
-
 class CheckObjects {
     // Returns true if the given object is a valid login
-    static isValidLogin(object){
+    static isValidLogin(object) {
         const tmp =
             object && typeof object == "object" &&
             object.email && typeof object.email == "string" &&
@@ -86,11 +76,10 @@ class CheckObjects {
     }
 
     // Returns true if the given object is a valid register
-    static isValidRegistration(object){
+    static isValidRegistration(object) {
         const tmp =
             object && typeof object == "object" &&
-            object.firstname && typeof object.firstname == "string" && object.firstname.length >= 2 &&
-            object.lastname && typeof object.lastname == "string" && object.lastname.length >= 2 &&
+            object.username && typeof object.username == "string" && object.username.length >= 2 &&
             object.email && typeof object.email == "string" && Isemail.validate(object.email) &&
             object.password && typeof object.password == "string";
         console.log(`Is registration valid: ${tmp == undefined ? false : tmp}`);
