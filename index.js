@@ -10,7 +10,7 @@ mongoose.connection
     .once('open', () => {
         console.log('Message:', 'The ' + config.dbName + ' database is connected');
 
-        const port = 27017;
+        const port = config.serverPort;
 
         app.listen(port, function(){
             console.log('http://localhost: ' + port);
@@ -32,7 +32,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Routing with versions
 app.use('/api', require('./src/routes/authentication'));
-// app.use('/api/register', require('./routes/Register'));
+app.use('/api/thread', require('./src/routes/thread'));
 
 
 module.exports = app;
