@@ -38,10 +38,12 @@ router.route("/register").post((request, response) => {
     const email = registration.email;
     const password = registration.password;
 
-    repo.createUser(username, email, password, (error, result) => {
-        if (error) response.status(error.code || 500).json(error);
-        else response.status(200).json(result);
-    });
+    repo.createUser(username, email, password, response);
+
+    // (error, result) => {
+    //     if (error) response.status(error.code || 500).json(error);
+    //     else response.status(200).json(result);
+    // }
 });
 
 router.route("/login").post((request, response) => {
