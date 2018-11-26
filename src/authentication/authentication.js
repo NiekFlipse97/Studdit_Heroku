@@ -11,7 +11,7 @@ function encodeToken(username) {
         iat: moment().unix(),
         sub: username
     };
-    return jwt.encode(payload, config.secretkey, null, null);
+    return jwt.encode(payload, config.secretKey, null, null);
 }
 
 //
@@ -20,7 +20,7 @@ function encodeToken(username) {
 function decodeToken(token, cb) {
 
     try {
-        const payload = jwt.decode(token, config.secretkey, null, null);
+        const payload = jwt.decode(token, config.secretKey, null, null);
 
         // Check if the token has expired. To do: Trigger issue in db ..
         const now = moment().unix();
