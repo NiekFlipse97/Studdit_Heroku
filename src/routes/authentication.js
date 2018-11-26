@@ -39,11 +39,6 @@ router.route("/register").post((request, response) => {
     const password = registration.password;
 
     repo.createUser(username, email, password, response);
-
-    // (error, result) => {
-    //     if (error) response.status(error.code || 500).json(error);
-    //     else response.status(200).json(result);
-    // }
 });
 
 router.route("/login").post((request, response) => {
@@ -54,16 +49,10 @@ router.route("/login").post((request, response) => {
         return;
     }
     // Get the username and password from the request.
-    const email = loginObject.email;
+    const username = loginObject.username;
     const password = loginObject.password;
 
-    response.status(200).json({"TEST: ": "The login check works"})
-
-    // Check in database for matching username and password.
-    // login(email, password, (error, result) => {
-    //     if(error) response.status(error.code || 500).json(error);
-    //     else response.status(200).json(result);
-    // });
+    repo.login(username, password, response);
 });
 
 class CheckObjects {
@@ -71,7 +60,7 @@ class CheckObjects {
     static isValidLogin(object) {
         const tmp =
             object && typeof object == "object" &&
-            object.email && typeof object.email == "string" &&
+            object.username && typeof object.username == "string" &&
             object.password && typeof object.password == "string";
         console.log(`Is login valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;

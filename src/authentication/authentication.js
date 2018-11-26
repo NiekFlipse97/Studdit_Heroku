@@ -18,7 +18,6 @@ function encodeToken(username) {
 // Decode (van token naar username)
 //
 function decodeToken(token, cb) {
-
     try {
         const payload = jwt.decode(token, config.secretKey, null, null);
 
