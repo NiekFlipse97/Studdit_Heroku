@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const auth = require('../authentication/authentication');
 const User = require('../schemas/UserSchema');
 
 
@@ -11,7 +11,7 @@ module.exports = class repository {
                 user.save()
                     .then(() => {
                         console.log('User: ' + user + ' has been created');
-                        callback(null, {message: 'The user has successfully been created'});
+                        callback(null, {token: auth.encodeToken(username)});
                     })
                     .catch(() => {
                         console.log('User: ' + user + ' has not successfully been created');
