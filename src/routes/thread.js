@@ -38,26 +38,7 @@ router.post('/', (req, res) => {
             const title = req.body.title || '';
             const content = req.body.content || '';
 
-            const newThread = new Thread({
-                title,
-                content
-            });
-
-            User.findOne({username})
-                .then((user) => {
-                    user.threads.push(newThread);
-                    Promise.all([user.save(), newThread.save()])
-                        .then(() => {
-                            console.log("Als het goed is is alles opgeslagen")
-                            res.status(201).json({"message": "Thread created and save to the user"})
-                        })
-                        .catch((error) => {
-                            res.status(error.code).json(error);
-                        })
-                })
-                .catch((error) => {
-                    res.status(error.code).json(error);
-                })
+            ThreadRepository.createThread(title, content, username, res);
         }
     })
 });
