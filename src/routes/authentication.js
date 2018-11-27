@@ -20,6 +20,9 @@ router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) 
             // Return json to the response with an error message.
             response.status((error.status || 401)).json(apiErrors.notAuthorised)
         } else {
+            request.user = {
+                username: payload.sub
+            };
             next();
         }
     })
