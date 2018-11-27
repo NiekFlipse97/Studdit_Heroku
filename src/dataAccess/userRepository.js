@@ -45,8 +45,35 @@ module.exports = class UserRepository {
 
     };
 
+    static changePassword(username, password, newPassword, response) {
+        User.findOne({username})
+            .then((user) => {
+                if(user.password === password){
+                    user.set({password: newPassword});
+                    user.save()
+                        .then(() => {
+                            response.status(200).json({message: "your password has been changed."});
+                        })
+                        .catch(() => {
+                            response.status(409).json(ApiErrors.conflict("database conflict"));
+                        })
 
-    static changePassword() {
+                } else {
+                    response.status(409).json(ApiErrors.conflict("Wrong password."));
+                }
+            })
+            .catch(() => {
+                response.status(409).json(ApiErrors.conflict("The user could not been found in the database."));
+            });
+    };
 
+    static deleteUser(username, response){
+        User.findOneAndDelete({username})
+            .then(() => {
+                response.status(200).json({message: "the user has been deleted."});
+            })
+            .catch(() => {
+                response.status(409).json(ApiErrors.conflict("database conflict"));
+            });
     };
 };
