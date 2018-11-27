@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../authentication/authentication');
 const apiErrors = require("../errorMessages/apiErrors.js");
 const Isemail = require('isemail');
-const repo = require('../dataAccess/repository');
+const repo = require('../dataAccess/userRepository');
 
 router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) => {
     console.log("Validate Token");

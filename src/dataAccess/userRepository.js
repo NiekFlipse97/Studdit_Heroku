@@ -2,7 +2,7 @@ const auth = require('../authentication/authentication');
 const User = require('../schemas/UserSchema');
 const ApiErrors = require('../errorMessages/apiErrors');
 
-module.exports = class repository {
+module.exports = class UserRepository {
     static createUser(username, email, password, response) {
         User.findOne({username})
             .then((user) => {
@@ -45,16 +45,8 @@ module.exports = class repository {
 
     };
 
-    //
-    // static findUser(username, callback) {
-    //     User.findOne({ username: username })
-    //         .then((user) => {
-    //             console.log('the user ' + user.username + ' has been found in the database as: ' + user);
-    //             callback(user, null);
-    //         })
-    //         .catch(() => {
-    //             console.log('the user ' + username + ' has not been found in the database');
-    //             callback(null, { message: 'The user has not been found in the database' });
-    //         });
-    // };
+
+    static changePassword() {
+
+    };
 };
