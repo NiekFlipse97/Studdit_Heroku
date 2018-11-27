@@ -4,6 +4,11 @@ const ApiErrors = require('../errorMessages/apiErrors');
 
 class ThreadRepository {
 
+    /**
+     * Gets all the threads that belong to a single user.
+     * @param {*} username The username of the user.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static getAllThreadsForSingleUser(username, res) {
         User.findOne({ username })
             .then((user) => {
@@ -25,6 +30,13 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Creates (Http POST) a new thread and automatically assings the thread to the user who created it.
+     * @param {*} title Thread title
+     * @param {*} content Thread body
+     * @param {*} username The username of the user that created the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static createThread(title, content, username, res) {
         const newThread = new Thread({
             title,
