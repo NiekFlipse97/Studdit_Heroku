@@ -2,34 +2,35 @@ const express = require("express");
 const router = express.Router();
 const auth = require('../authentication/authentication');
 const apiErrors = require("../errorMessages/apiErrors.js");
-const Thread = require('../schemas/ThreadSchema');
+const ThreadRepository = require('../dataAccess/threadRepository');
 const User = require('../schemas/UserSchema');
-const Isemail = require('isemail');
-const repo = require('../dataAccess/repository');
+const Thread = require('../schemas/ThreadSchema');
 
 /**
  * Get all the threads that the current logged in user has
  */
-// router.get('/', (req, res) => {
-//     const token = req.header('Authorization');
+router.get('/', (req, res) => {
+    const token = req.header('X-Access-Token');
 
-//     auth.decodeToken(token, (err, payload) => {
-//         if (err) {
-//             let error = apiErrors.noValidToken();
-//             res.status(error.code).json(error);
-//         } else {
-//             const email = payload.sub;
+    auth.decodeToken(token, (err, payload) => {
+        if (err) {
+            let error = apiErrors.noValidToken();
+            res.status(error.code).json(error);
+        } else {
+            ThreadRepository.getAllThreadsForSingleUser(payload.sub, res);
+        }
+    })
+});
 
-//         }
-//     })
-// });
-
+/**
+ * Create a new thread, and add the reference to the user threads array
+ */
 router.post('/', (req, res) => {
     const token = req.header('X-Access-Token');
 
     // TODO: token is now validated two times......
     auth.decodeToken(token, (err, payload) => {
-        if(err) {
+        if (err) {
             const error = apiErrors.noValidToken();
             res.status(error.code).json(error);
         } else {
@@ -42,20 +43,17 @@ router.post('/', (req, res) => {
                 content
             });
 
-            newThread.save()
-                .then(() => Thread.findOne({title, content}))
-                .then((thread) => {
-                    console.log('thread has been created. time to find the user.');
-
-                    User.findOneAndUpdate({username}, {$push: {"threads": thread._id}})
+            User.findOne({username})
+                .then((user) => {
+                    user.threads.push(newThread);
+                    Promise.all([user.save(), newThread.save()])
                         .then(() => {
-                            console.log("threads pushed");
+                            console.log("Als het goed is is alles opgeslagen")
+                            res.status(201).json({"message": "Thread created and save to the user"})
                         })
                         .catch((error) => {
-                            console.log(error)
+                            res.status(error.code).json(error);
                         })
-
-                    res.status(201).json(thread);
                 })
                 .catch((error) => {
                     res.status(error.code).json(error);
@@ -64,11 +62,14 @@ router.post('/', (req, res) => {
     })
 });
 
+/**
+ * Delete a single thread by it's id.
+ */
 router.delete('/', (req, res) => {
     const token = req.header('X-Access-Token');
 
     auth.decodeToken(token, (err, payload) => {
-        if(err) {
+        if (err) {
             const error = apiErrors.noValidToken();
             res.status(error.code).json(error);
         } else {
@@ -77,19 +78,23 @@ router.delete('/', (req, res) => {
 
             console.log('the thread id that i just got: ' + threadId);
 
-            Thread.findOne({_id: threadId})
+            Thread.findOne({ _id: threadId })
                 .then((thread) => {
-                    thread.remove()
-                        .then(() => {
-                            User.findOneAndUpdate({username}, {$pull: {"threads": threadId}})
-                                .then(() => {
-                                    console.log('threads removed from user.')
-                                })
-                                .catch((error) => {
-                                    res.status(error.code).json(error);
-                                })
-                        })
-                    res.status(200).json({message: "thread removed"});
+                    if (thread) {
+                        thread.remove()
+                            .then(() => {
+                                User.findOneAndUpdate({ username }, { $pull: { "threads": threadId } })
+                                    .then(() => {
+                                        console.log('threads removed from user.')
+                                    })
+                                    .catch((error) => {
+                                        res.status(error.code).json(error);
+                                    })
+                            })
+                        res.status(200).json({ message: "thread removed" });
+                    } else {
+                        res.status(404).json(apiErrors.notFound());
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -97,6 +102,6 @@ router.delete('/', (req, res) => {
                 })
         }
     })
- })
+})
 
 module.exports = router;
