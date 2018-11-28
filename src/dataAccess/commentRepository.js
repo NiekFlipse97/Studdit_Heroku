@@ -14,7 +14,7 @@ class CommentRepository {
 
                         Promise.all([user.save(), thread.save(), newComment.save()])
                             .then(() => {
-                                res.status(201).json({ "message": "comment created and saved to the thread and user" })
+                                res.status(200).json({ message: "comment created and saved to the thread and user" })
                             })
                             .catch((error) => {
                                 console.log("In catch promise.all = " + error);
@@ -31,15 +31,33 @@ class CommentRepository {
             })
     };
 
-    // static deleteComment(threadId, commentId,username, res){
-    //     Thread.findOne({_id: threadId})
-    //         .then((thread) => {
-    //
-    //         })
-    //         .catch(() => {
-    //             res.status(500).json(ApiErrors.notFound());
-    //         })
-    // }
+    static deleteComment(threadId, commentId, res){
+        Comment.findOneAndDelete({_id: commentId})
+            .then(()=>{
+                Thread.findOneAndUpdate({_id: threadId},{ $pull: { "comments": commentId }})
+                    .then(()=> {
+                        console.log("the comment has been deleted")
+                        res.status(200).json({ message: "comment has been deleted" })
+                    })
+                    .catch(()=> res.status(500).json(ApiErrors.internalServerError()));
+            })
+            .catch(()=>{
+                res.status(500).json(ApiErrors.internalServerError());
+            });
+        // Thread.findOneAndUpdate({_id: threadId}, { $pull: { "comments": commentId } })
+        //     .then((thread) => {
+        //         Comment.findOneAndDelete({_id: commentId})
+        //             .then(() => {
+        //                 res.status(200).json({ "message": "comment has been deleted" });
+        //             })
+        //             .catch(()=>{
+        //                 res.status(500).json(ApiErrors.notFound());
+        //             });
+        //     })
+        //     .catch(() => {
+        //         res.status(500).json(ApiErrors.notFound());
+        //     })
+    }
 }
 
 module.exports = CommentRepository;
