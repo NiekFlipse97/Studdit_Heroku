@@ -52,9 +52,14 @@ router.put('/:id/upvote', (req, res) => {
     const username = req.user.username || '';
     const threadId = req.params.id || '';
 
-    console.log(threadId);
-
     ThreadRepository.upvote(threadId, username, res);
+})
+
+router.put('/:id/downvote', (req, res) => {
+    const username = req.user.username || '';
+    const threadId = req.params.id || '';
+
+    ThreadRepository.downvote(threadId, username, res); 
 })
 
 module.exports = router;

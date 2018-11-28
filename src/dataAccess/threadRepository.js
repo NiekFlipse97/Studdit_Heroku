@@ -179,10 +179,36 @@ class ThreadRepository {
         User.findOne({ username })
             .then((user) => {
                 let isUpvoted = false;
+                let isDownvoted = false;
                 for (let vote of user.upvoted) {
                     if (vote == threadId) {
                         isUpvoted = true;
                     }
+                }
+
+                for (let vote of user.downvoted) {
+                    if (vote == threadId) {
+                        isDownvoted = true;
+                    }
+                }
+
+                if (isDownvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { downvotes: -1 } })
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                var index = user.downvoted.indexOf(threadId);
+                                if (index >= 0) {
+                                    user.downvoted.splice(index, 1);
+                                }
+                            } else {
+                                console.log('Thread is null or undefined')
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
                 }
 
                 if (!isUpvoted) {
@@ -206,6 +232,71 @@ class ThreadRepository {
                         })
                 } else {
                     res.status(403).json({ "message": "You already upvoted this thread" });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(error.code).json(error);
+            })
+    }
+
+    static downvote(threadId, username, res) {
+        User.findOne({ username })
+            .then((user) => {
+                let isDownvoted = false;
+                let isUpvoted = false;
+                for (let vote of user.downvoted) {
+                    if (vote == threadId) {
+                        isDownvoted = true;
+                    }
+                }
+
+                for (let vote of user.upvoted) {
+                    if (vote == threadId) {
+                        isUpvoted = true;
+                    }
+                }
+
+                if (isUpvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { upvotes: -1 } })
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                var index = user.upvoted.indexOf(threadId);
+                                if (index >= 0) {
+                                    user.upvoted.splice(index, 1);
+                                }
+                            } else {
+                                console.log('Thread is null or undefined')
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
+                }
+
+                if (!isDownvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { downvotes: 1 } })
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                user.downvoted.push(threadId)
+
+                                return user.save()
+                            } else {
+                                res.status(404).json(ApiErrors.notFound())
+                            }
+                        })
+                        .then(() => {
+                            res.status(200).json({ "message": "Thread has been downvoted" })
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
+                } else {
+                    res.status(403).json({ "message": "You already downvoted this thread" });
                 }
             })
             .catch((error) => {
