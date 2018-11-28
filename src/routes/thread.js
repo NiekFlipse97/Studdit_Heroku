@@ -10,6 +10,16 @@ router.get('/', (req, res) => {
     ThreadRepository.getAllThreadsForSingleUser(username, res);
 });
 
+router.get('/all', (req, res) => {
+    ThreadRepository.getAllThreads(res);
+})
+
+router.get('/:id', (req, res) => {
+    const threadId = req.params.id || '';
+
+    ThreadRepository.getSingleThreadWithComments(threadId, res);
+})
+
 /**
  * Create a new thread, and add the reference to the user threads array
  */
