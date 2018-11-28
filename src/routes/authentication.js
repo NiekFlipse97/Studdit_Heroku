@@ -5,8 +5,6 @@ const apiErrors = require("../errorMessages/apiErrors.js");
 const Isemail = require('isemail');
 const repo = require('../dataAccess/userRepository');
 
-let usernameToken = null;
-
 router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) => {
     console.log("Validate Token");
 
@@ -25,7 +23,6 @@ router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) 
             request.user = {
                 username: payload.sub
             };
-            usernameToken = payload.sub;
             next();
         }
     })
@@ -73,12 +70,12 @@ router.route("/user/changepassword").post((request, response) => {
     const password = changepasswordObject.password;
     const newPassword = changepasswordObject.newPassword;
 
-    repo.changePassword(usernameToken, password, newPassword, response);
+    repo.changePassword(request.user.username, password, newPassword, response);
 
 });
 
 router.route("/user").delete((request, response) => {
-    repo.deleteUser(usernameToken, response);
+    repo.deleteUser(request.user.username, response);
 });
 
 

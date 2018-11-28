@@ -11,21 +11,19 @@ module.exports = class UserRepository {
                     newUser.save()
                         .then(() => {
                             let token = auth.encodeToken(username);
-                            console.log('User: ' + user + ' has been created. Token: ' + token);
+                            console.log('User: ' + newUser + ' has been created. Token: ' + token);
                             response.status(200).json({token});
-                            // callback(null, { token: auth.encodeToken(username) });
                         })
-                        .catch((error) => {
-                            console.log('User: ' + user + ' has not successfully been created');
-                            response.status(error.code || 500).json(error)
-                            // callback({ message: 'The user has not successfully been created' }, null);
+                        .catch(() => {
+                            console.log('User: ' + newUser + ' has not successfully been created');
+                            response.status(500).json(ApiErrors.internalServerError());
                         })
                 } else {
-                    response.status(409).json(ApiErrors.conflict("The user already exists in the database."));
+                    response.status(420).json(ApiErrors.userExists());
                 }
             })
             .catch(() => {
-                response.status(409).json(ApiErrors.conflict("database conflict"));
+                response.status(500).json(ApiErrors.internalServerError());
             });
     };
 
@@ -36,11 +34,11 @@ module.exports = class UserRepository {
                     let token = auth.encodeToken(username);
                     response.status(200).json({token});
                 } else {
-                    response.status(409).json(ApiErrors.conflict("Wrong password."));
+                    response.status(401).json(ApiErrors.notAuthorised());
                 }
             })
             .catch(() => {
-                response.status(409).json(ApiErrors.conflict("The user could not been found in the database."));
+                response.status(401).json(ApiErrors.notAuthorised())
             });
 
     };
@@ -48,6 +46,7 @@ module.exports = class UserRepository {
     static changePassword(username, password, newPassword, response) {
         User.findOne({username})
             .then((user) => {
+                console.log("User: " + user);
                 if(user.password === password){
                     user.set({password: newPassword});
                     user.save()
@@ -55,15 +54,15 @@ module.exports = class UserRepository {
                             response.status(200).json({message: "your password has been changed."});
                         })
                         .catch(() => {
-                            response.status(409).json(ApiErrors.conflict("database conflict"));
+                            response.status(500).json(ApiErrors.internalServerError());
                         })
 
                 } else {
-                    response.status(409).json(ApiErrors.conflict("Wrong password."));
+                    response.status(401).json(ApiErrors.notAuthorised());
                 }
             })
             .catch(() => {
-                response.status(409).json(ApiErrors.conflict("The user could not been found in the database."));
+                response.status(404).json(ApiErrors.notFound(username));
             });
     };
 
@@ -73,7 +72,7 @@ module.exports = class UserRepository {
                 response.status(200).json({message: "the user has been deleted."});
             })
             .catch(() => {
-                response.status(409).json(ApiErrors.conflict("database conflict"));
+                response.status(500).json(ApiErrors.internalServerError());
             });
     };
 };

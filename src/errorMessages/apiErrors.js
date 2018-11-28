@@ -7,8 +7,8 @@ module.exports = class apiErrors {
      * The response must include a X-Access-Token header field containing a challenge applicable to the requested resource.
      * @returns {Error} Not authorized 401.
      */
-    static get notAuthorised(){
-        return new apiError("Niet geautoriseerd (geen valid token)", 401);
+    static notAuthorised(){
+        return new apiError("Niet geautoriseerd", 401);
     }
 
     /**
