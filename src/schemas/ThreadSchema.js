@@ -22,7 +22,9 @@ const ThreadSchema = new Schema({
     comments: [{
         type: Schema.Types.ObjectId,
         ref: 'comment'
-    }]
+    }],
+    upvotes: Number,
+    downvotes: Number
 });
 
 // Define the thread collection and add the ThreadSchema.
