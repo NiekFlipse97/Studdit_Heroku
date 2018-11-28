@@ -106,7 +106,7 @@ class CheckObjects {
             object && typeof object == "object" &&
             object.password && typeof object.password == "string" &&
             object.newPassword && typeof object.newPassword == "string";
-        console.log(`Is registration valid: ${tmp == undefined ? false : tmp}`);
+        console.log(`Is password change valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
     }
 }
