@@ -8,8 +8,8 @@ router.get('/', (req, res) => {
 });
 
 /* Create a new comment based on thead id, user needs to be logged in*/
-router.post('/:id', (req, res) => {
-    const threadId = req.params.id;
+router.post('/:threadId', (req, res) => {
+    const threadId = req.params.threadId;
     const createCommentObject = req.body;
 
     if (!CheckObjects.isValidComment(createCommentObject)) {
@@ -21,6 +21,13 @@ router.post('/:id', (req, res) => {
     const content = createCommentObject.content;
 
     repo.createComment(threadId, req.user.username, content, res);
+});
+
+router.delete('/:commentId', (req, res) => {
+    const threadId = req.params.threadId;
+    const commentId = req.params.commentId;
+
+    repo.deleteComment(threadId, commentId, res)
 });
 
 class CheckObjects {
