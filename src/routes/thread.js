@@ -48,4 +48,13 @@ router.put('/:id', (req, res) => {
     ThreadRepository.updateThread(threadId, newContent, res);
 })
 
+router.put('/:id/upvote', (req, res) => {
+    const username = req.user.username || '';
+    const threadId = req.params.id || '';
+
+    console.log(threadId);
+
+    ThreadRepository.upvote(threadId, username, res);
+})
+
 module.exports = router;

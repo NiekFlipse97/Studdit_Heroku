@@ -55,14 +55,17 @@ class ThreadRepository {
                 }
             })
             .then((users) => {
-                for(let user of users) {
-                    for(let thread of user.threads) {
-                        if(thread._id == threadId) {
-                            res.status(200).json({ users });
+                for (let user of users) {
+                    for (let thread of user.threads) {
+                        if (thread._id == threadId) {
+                            res.status(200).json({
+                                "thread": thread,
+                                "username": user.username
+                            });
                         }
                     }
                 }
-                
+
                 res.status(404).json(apiErrors.notFound());
             })
             .catch((error) => {
@@ -81,7 +84,9 @@ class ThreadRepository {
     static createThread(title, content, username, res) {
         const newThread = new Thread({
             title,
-            content
+            content,
+            upvotes: 0,
+            downvotes: 0
         });
 
         User.findOne({ username })
@@ -147,6 +152,45 @@ class ThreadRepository {
             })
             .catch((error) => {
                 console.log("Oops something went wrong while finding the thread.");
+                res.status(error.code).json(error);
+            })
+    }
+
+    static upvote(threadId, username, res) {
+        User.findOne({ username })
+            .then((user) => {
+                let isUpvoted = false;
+                for (let vote of user.upvoted) {
+                    if (vote == threadId) {
+                        isUpvoted = true;
+                    }
+                }
+
+                if(!isUpvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { upvotes: 1 } })
+                    .then(() => Thread.findOne({ _id: threadId }))
+                    .then((thread) => {
+                        if (thread) {
+                            user.upvoted.push(threadId)
+
+                            return user.save()
+                        } else {
+                            res.status(404).json(ApiErrors.notFound())
+                        }
+                    })
+                    .then(() => {
+                        res.status(200).json({ "message": "Thread has been upvoted" })
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        res.status(error.code).json(error);
+                    })
+                } else {
+                    res.status(403).json({"message": "You already upvoted this thread"});
+                }
+            })
+            .catch((error) => {
+                console.log(error);
                 res.status(error.code).json(error);
             })
     }

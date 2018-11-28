@@ -14,6 +14,14 @@ const UserSchema = new Schema({
     threads: [{
         type: Schema.Types.ObjectId,
         ref: 'thread'
+    }],
+    upvoted: [{
+        type: Schema.Types.ObjectId,
+        ref: 'thread'
+    }],
+    downvoted: [{
+        type: Schema.Types.ObjectId,
+        ref: 'thread'
     }]
 });
 
