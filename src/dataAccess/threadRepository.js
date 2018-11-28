@@ -35,12 +35,29 @@ class ThreadRepository {
      * @param {*} res The http response that is used to return status codes and json.
      */
     static getAllThreads(res) {
+        let responseObject = [];
+
         User.find({})
             .populate('threads')
             .then((users) => {
-                res.status(200).json({ users });
+                for (let user of users) {
+                    if (user.threads) {
+                        for (let thread of user.threads) {
+                            responseObject.push({
+                                "_id": thread._id,
+                                "title": thread.title,
+                                "content": thread.content,
+                                "upvotes": thread.upvotes,
+                                "downvotes": thread.downvotes,
+                                "username": user.username
+                            });
+                        }
+                    }
+                }
+                res.status(200).json({ "threads": responseObject });
             })
             .catch((error) => {
+                console.log(error);
                 res.status(error.code).json(error);
             })
     }
@@ -56,17 +73,19 @@ class ThreadRepository {
             })
             .then((users) => {
                 for (let user of users) {
-                    for (let thread of user.threads) {
-                        if (thread._id == threadId) {
-                            res.status(200).json({
-                                "thread": thread,
-                                "username": user.username
-                            });
+                    if (user.threads) {
+                        for (let thread of user.threads) {
+                            if (thread._id == threadId) {
+                                res.status(200).json({
+                                    "thread": thread,
+                                    "username": user.username
+                                });
+                            }
                         }
+                    } else {
+                        res.status(404).json(ApiErrors.notFound());
                     }
                 }
-
-                res.status(404).json(apiErrors.notFound());
             })
             .catch((error) => {
                 console.log("error van de get single thread with comments ==== " + error);
@@ -166,27 +185,27 @@ class ThreadRepository {
                     }
                 }
 
-                if(!isUpvoted) {
+                if (!isUpvoted) {
                     Thread.update({ _id: threadId }, { $inc: { upvotes: 1 } })
-                    .then(() => Thread.findOne({ _id: threadId }))
-                    .then((thread) => {
-                        if (thread) {
-                            user.upvoted.push(threadId)
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                user.upvoted.push(threadId)
 
-                            return user.save()
-                        } else {
-                            res.status(404).json(ApiErrors.notFound())
-                        }
-                    })
-                    .then(() => {
-                        res.status(200).json({ "message": "Thread has been upvoted" })
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        res.status(error.code).json(error);
-                    })
+                                return user.save()
+                            } else {
+                                res.status(404).json(ApiErrors.notFound())
+                            }
+                        })
+                        .then(() => {
+                            res.status(200).json({ "message": "Thread has been upvoted" })
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
                 } else {
-                    res.status(403).json({"message": "You already upvoted this thread"});
+                    res.status(403).json({ "message": "You already upvoted this thread" });
                 }
             })
             .catch((error) => {
