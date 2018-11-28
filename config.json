@@ -1,5 +1,6 @@
 {
   "secretKey": "AssessmentNoSQL-102586BK-",
   "dbName": "studdit",
-  "dbServer": "localhost"
+  "dbServer": "localhost",
+  "serverPort": "27017"
 }

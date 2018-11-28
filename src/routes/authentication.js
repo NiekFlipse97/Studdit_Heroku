@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../authentication/authentication');
 const apiErrors = require("../errorMessages/apiErrors.js");
 const Isemail = require('isemail');
-const repo = require('../dataAccess/repository');
+const repo = require('../dataAccess/userRepository');
 
 router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) => {
     console.log("Validate Token");
@@ -20,6 +20,9 @@ router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) 
             // Return json to the response with an error message.
             response.status((error.status || 401)).json(apiErrors.notAuthorised)
         } else {
+            request.user = {
+                username: payload.sub
+            };
             next();
         }
     })
@@ -39,11 +42,6 @@ router.route("/register").post((request, response) => {
     const password = registration.password;
 
     repo.createUser(username, email, password, response);
-
-    // (error, result) => {
-    //     if (error) response.status(error.code || 500).json(error);
-    //     else response.status(200).json(result);
-    // }
 });
 
 router.route("/login").post((request, response) => {
@@ -54,24 +52,39 @@ router.route("/login").post((request, response) => {
         return;
     }
     // Get the username and password from the request.
-    const email = loginObject.email;
+    const username = loginObject.username;
     const password = loginObject.password;
 
-    response.status(200).json({"TEST: ": "The login check works"})
-
-    // Check in database for matching username and password.
-    // login(email, password, (error, result) => {
-    //     if(error) response.status(error.code || 500).json(error);
-    //     else response.status(200).json(result);
-    // });
+    repo.login(username, password, response);
 });
+
+router.route("/user/changepassword").post((request, response) => {
+    const changepasswordObject = request.body;
+
+    if (!CheckObjects.isValidPasswordChange(changepasswordObject)) {
+        const error = apiErrors.wrongRequestBodyProperties;
+        response.status(error.code).json(error);
+        return;
+    }
+
+    const password = changepasswordObject.password;
+    const newPassword = changepasswordObject.newPassword;
+
+    repo.changePassword(request.user.username, password, newPassword, response);
+
+});
+
+router.route("/user").delete((request, response) => {
+    repo.deleteUser(request.user.username, response);
+});
+
 
 class CheckObjects {
     // Returns true if the given object is a valid login
     static isValidLogin(object) {
         const tmp =
             object && typeof object == "object" &&
-            object.email && typeof object.email == "string" &&
+            object.username && typeof object.username == "string" &&
             object.password && typeof object.password == "string";
         console.log(`Is login valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
@@ -84,6 +97,15 @@ class CheckObjects {
             object.username && typeof object.username == "string" && object.username.length >= 2 &&
             object.email && typeof object.email == "string" && Isemail.validate(object.email) &&
             object.password && typeof object.password == "string";
+        console.log(`Is registration valid: ${tmp == undefined ? false : tmp}`);
+        return tmp == undefined ? false : tmp;
+    }
+
+    static isValidPasswordChange(object) {
+        const tmp =
+            object && typeof object == "object" &&
+            object.password && typeof object.password == "string" &&
+            object.newPassword && typeof object.newPassword == "string";
         console.log(`Is registration valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
     }
