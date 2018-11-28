@@ -35,28 +35,10 @@ class CommentRepository {
         Comment.findOneAndDelete({_id: commentId})
             .then(()=>{
                 Thread.findOneAndUpdate({_id: threadId},{ $pull: { "comments": commentId }})
-                    .then(()=> {
-                        console.log("the comment has been deleted")
-                        res.status(200).json({ message: "comment has been deleted" })
-                    })
+                    .then(()=> res.status(200).json({ message: "comment has been deleted" }))
                     .catch(()=> res.status(500).json(ApiErrors.internalServerError()));
             })
-            .catch(()=>{
-                res.status(500).json(ApiErrors.internalServerError());
-            });
-        // Thread.findOneAndUpdate({_id: threadId}, { $pull: { "comments": commentId } })
-        //     .then((thread) => {
-        //         Comment.findOneAndDelete({_id: commentId})
-        //             .then(() => {
-        //                 res.status(200).json({ "message": "comment has been deleted" });
-        //             })
-        //             .catch(()=>{
-        //                 res.status(500).json(ApiErrors.notFound());
-        //             });
-        //     })
-        //     .catch(() => {
-        //         res.status(500).json(ApiErrors.notFound());
-        //     })
+            .catch(()=> res.status(500).json(ApiErrors.internalServerError()));
     }
 }
 
