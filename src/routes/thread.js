@@ -31,4 +31,11 @@ router.delete('/:id', (req, res) => {
     ThreadRepository.deleteThread(threadId, username, res);
 })
 
+router.put('/:id', (req, res) => {
+    const threadId = req.params.id || '' ;
+    const newContent = req.body.content || '';
+
+    ThreadRepository.updateThread(threadId, newContent, res);
+})
+
 module.exports = router;

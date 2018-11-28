@@ -90,6 +90,25 @@ class ThreadRepository {
             res.status(error.code).json(error);
         })
     }
+
+    static updateThread(threadId, newContent, res) {
+        Thread.findOne({_id: threadId})
+            .then((thread) => {
+                thread.content = newContent;
+                thread.save()
+                    .then(() => {
+                        res.status(200).json({"message": "The thread is updated."})
+                    })
+                    .catch((error) => {
+                        console.log('Oops something went wrong wile saving the updated thread: ' + error)
+                        res.status(error.code).json(error);
+                    });
+            })
+            .catch((error) => {
+                console.log("Oops something went wrong while finding the thread.");
+                res.status(error.code).json(error);
+            })
+    }
 }
 
 module.exports = ThreadRepository;
