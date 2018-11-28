@@ -10,43 +10,23 @@ const Thread = require('../schemas/ThreadSchema');
  * Get all the threads that the current logged in user has
  */
 router.get('/', (req, res) => {
-    const token = req.header('X-Access-Token');
-
-    auth.decodeToken(token, (err, payload) => {
-        if (err) {
-            let error = apiErrors.noValidToken();
-            res.status(error.code).json(error);
-        } else {
-            ThreadRepository.getAllThreadsForSingleUser(payload.sub, res);
-        }
-    })
+    ThreadRepository.getAllThreadsForSingleUser(req.user.username, res);
 });
 
 /**
  * Create a new thread, and add the reference to the user threads array
  */
 router.post('/', (req, res) => {
-    const token = req.header('X-Access-Token');
+    const title = req.body.title || '';
+    const content = req.body.content || '';
 
-    // TODO: token is now validated two times......
-    auth.decodeToken(token, (err, payload) => {
-        if (err) {
-            const error = apiErrors.noValidToken();
-            res.status(error.code).json(error);
-        } else {
-            const username = payload.sub
-            const title = req.body.title || '';
-            const content = req.body.content || '';
-
-            ThreadRepository.createThread(title, content, username, res);
-        }
-    })
+    ThreadRepository.createThread(title, content, req.user.username, res);
 });
 
 /**
  * Delete a single thread by it's id.
  */
-router.delete('/', (req, res) => {
+router.delete('/:id', (req, res) => {
     const token = req.header('X-Access-Token');
 
     auth.decodeToken(token, (err, payload) => {
@@ -54,10 +34,8 @@ router.delete('/', (req, res) => {
             const error = apiErrors.noValidToken();
             res.status(error.code).json(error);
         } else {
-            const threadId = req.body.id;
+            const threadId = req.params.id;
             const username = payload.sub
-
-            console.log('the thread id that i just got: ' + threadId);
 
             Thread.findOne({ _id: threadId })
                 .then((thread) => {

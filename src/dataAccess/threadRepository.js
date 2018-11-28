@@ -51,12 +51,18 @@ class ThreadRepository {
                         res.status(201).json({ "message": "Thread created and save to the user" })
                     })
                     .catch((error) => {
+                        console.log("In catch promise.all = " + error);
                         res.status(error.code).json(error);
                     })
             })
             .catch((error) => {
+                console.log("In catch findOne for user === " + error);
                 res.status(error.code).json(error);
             })
+    }
+
+    static deleteThread(threadId, username) {
+
     }
 }
 
