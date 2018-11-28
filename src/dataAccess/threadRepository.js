@@ -61,8 +61,34 @@ class ThreadRepository {
             })
     }
 
-    static deleteThread(threadId, username) {
-
+    /**
+     * Delete a single thread by it's id
+     * @param {*} threadId The id of the thread that will be deleted.
+     * @param {*} username The username of the user that deletes the thread.
+     */
+    static deleteThread(threadId, username, res) {
+        Thread.findOne({ _id: threadId })
+        .then((thread) => {
+            if (thread) {
+                thread.remove()
+                    .then(() => {
+                        User.findOneAndUpdate({ username }, { $pull: { "threads": threadId } })
+                            .then(() => {
+                                console.log('threads removed from user.')
+                            })
+                            .catch((error) => {
+                                res.status(error.code).json(error);
+                            })
+                    })
+                res.status(200).json({ message: "thread removed" });
+            } else {
+                res.status(404).json(apiErrors.notFound());
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            res.status(error.code).json(error);
+        })
     }
 }
 
