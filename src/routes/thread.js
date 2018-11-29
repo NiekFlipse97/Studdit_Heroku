@@ -16,8 +16,6 @@ router.get('/all/:sort?', (req, res) => {
     ThreadRepository.getAllThreads(sortStyle, res);
 })
 
-
-
 router.get('/:id', (req, res) => {
     const threadId = req.params.id || '';
 

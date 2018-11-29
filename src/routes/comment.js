@@ -30,6 +30,20 @@ router.delete('/:threadId/:commentId', (req, res) => {
     repo.deleteComment(threadId, commentId, res)
 });
 
+router.put('/:id/upvote', (req, res) => {
+    const username = req.user.username || '';
+    const threadId = req.params.id || '';
+
+    repo.upvote(threadId, username, res);
+})
+
+router.put('/:id/downvote', (req, res) => {
+    const username = req.user.username || '';
+    const threadId = req.params.id || '';
+
+    repo.downvote(threadId, username, res); 
+})
+
 class CheckObjects {
     static isValidComment(object) {
         const tmp =
