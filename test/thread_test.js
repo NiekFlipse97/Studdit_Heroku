@@ -195,6 +195,36 @@ describe('Thread', () => {
             })
     })
 
+    it('Should update the content of a thread', (done) => {
+        let myThread = new Thread({
+            "title": "Test that will be updated",
+            "content": "hiasdfasdf"
+        });
+
+        myThread.save()
+            .then(() => Thread.findOne({title: myThread.title}))
+            .then((thread) =>{
+                chai.request(index)
+                    .put('/api/thread/' + thread._id)
+                    .set('Content-Type', 'application/json')
+                    .set('X-Access-Token', token)
+                    .send({
+                        title: "If this updates it does not work",
+                        content: "If this updates it does work"
+                    })
+                    .end((err, res) => {
+                        Thread.findOne({title: myThread.title})
+                            .then((updatedThread) => {
+                                res.should.have.status(200);
+                                res.body.should.have.property('message', 'The thread is updated.');
+                                updatedThread.content.should.not.equal('hiasdfasdfk');
+                                updatedThread.content.should.equal('If this updates it does work');
+                                done();
+                            })  
+                    })
+            })
+    })
+
     after((done) => {
         mongoose.connection.collections.threads.drop(() => {
             done();
