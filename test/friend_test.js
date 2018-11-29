@@ -1,14 +1,9 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const index = require('../index');
-const moment = require('moment');
-const mongoose = require('mongoose');
-const Thread = require('../src/schemas/ThreadSchema');
 
 chai.should();
 chai.use(chaiHttp);
-
-const datetime = moment().unix().toString();
 
 describe('Friend', () => {
     let token = '';
@@ -74,18 +69,31 @@ describe('Friend', () => {
 
     it('should be able to create an friendship between two users', (done)=> {
         chai.request(index)
-            .delete('/api/friend')
+            .post('/api/friend')
             .set('X-Access-Token', token)
+            .send({
+                usernameFriend: "FRIEND"
+            })
             .end((err, res) => {
                 if (err) console.log("Error: " + err);
 
-                res.should.have.status(201);
-                res.body.should.have.property('message', 'Thread created and save to the user');
-
+                res.should.have.status(200);
                 done();
             });
+    });
 
+    it('should be able to delete a friendship', (done) => {
+        chai.request(index)
+            .delete('/api/friend')
+            .set('X-Access-Token', token)
+            .send({
+                usernameFriend: "FRIEND"
+            })
+            .end((err, res) => {
+                if (err) console.log("Error: " + err);
 
-        done();
+                res.should.have.status(200);
+                done();
+            });
     });
 });
