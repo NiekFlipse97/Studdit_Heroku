@@ -12,6 +12,7 @@ class CommentRepository {
                         const newComment = new Comment({
                             content,
                             user,
+                            reactions: [],
                             upvotes: 0,
                             downvotes: 0
                         });
@@ -44,6 +45,50 @@ class CommentRepository {
                     .catch(() => res.status(500).json(ApiErrors.internalServerError()));
             })
             .catch(() => res.status(500).json(ApiErrors.internalServerError()));
+    }
+
+    /**
+     * React to a comment
+     * @param {*} username The username of the user that reacted to a comment
+     * @param {*} content The content of the reaction
+     * @param {*} commentId The commentId of the parrent comment. The comment that is created from this function will be added as reaction.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
+    static reactToComment(username, content, commentId, res) {
+        console.log(commentId)
+        User.findOne({username})
+            .then((user) => {
+                Comment.findOne({_id: commentId})
+                    .then((comment) => {
+                        if(comment) {
+                            const reaction = new Comment({
+                                content,
+                                user,
+                                upvotes: 0,
+                                downvotes: 0
+                            })
+                            console.log(comment.reactions);
+                            comment.reactions.push(reaction);
+    
+                            Promise.all([comment.save(), reaction.save()])
+                                .then(() => res.status(201).json({"message": "Reaction is created."}))
+                                .catch((error) => {
+                                    console.log(error);
+                                    res.status(error.code).json(error)
+                                });
+                        } else {
+                            res.status(404).json(ApiErrors.notFound());
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        res.status(error.code).json(error)
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(error.code).json(error)
+            });
     }
 
     /**

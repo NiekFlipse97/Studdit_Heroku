@@ -23,6 +23,14 @@ router.post('/:threadId', (req, res) => {
     repo.createComment(threadId, req.user.username, content, res);
 });
 
+router.post('/react/:commentId', (req, res) => {
+    const commentId = req.params.commentId || '';
+    const username = req.user.username || '';
+    const content = req.body.content || '';
+
+    repo.reactToComment(username, content, commentId, res);
+});
+
 router.delete('/:threadId/:commentId', (req, res) => {
     const threadId = req.params.threadId;
     const commentId = req.params.commentId;
