@@ -16,7 +16,7 @@ module.exports = class apiErrors {
      * @returns {Error} Invalid Token 498.
      */
     static noValidToken() {
-        return new Error("Invalid Token", 498);
+        return new apiError("Invalid Token", 498);
     }
 
     /**
@@ -24,7 +24,7 @@ module.exports = class apiErrors {
      * @returns {Error} Conflict 409.
      */
     static conflict() {
-        return new Error("Conflict", 409);
+        return new apiError("Conflict", 409);
     }
 
     /**
@@ -33,7 +33,7 @@ module.exports = class apiErrors {
      * @returns {Error} Bad Request 400.
      */
     static badRequest() {
-        return new Error("Bad Request", 400);
+        return new apiError("Bad Request", 400);
     }
 
     /**
@@ -42,7 +42,7 @@ module.exports = class apiErrors {
      * @returns {Error} Forbidden 403.
      */
     static forbidden() {
-        return new Error("Forbidden", 403);
+        return new apiError("Forbidden", 403);
     }
 
     /**
@@ -50,7 +50,7 @@ module.exports = class apiErrors {
      * @returns {Error}
      */
     static requestTimeout() {
-        return new Error("Request Timeout", 408);
+        return new apiError("Request Timeout", 408);
     }
 
     /**
@@ -59,7 +59,7 @@ module.exports = class apiErrors {
      * @returns {Error}
      */
     static internalServerError() {
-        return new Error("Internal Server Error", 500);
+        return new apiError("Internal Server Error", 500);
     }
 
     /**
@@ -68,7 +68,7 @@ module.exports = class apiErrors {
      * @returns {Error} Not Found, 404
      */
     static notFound() {
-        return new Error("Not Found", 404);
+        return new apiError("Not Found", 404);
     }
 
     /**
@@ -77,7 +77,7 @@ module.exports = class apiErrors {
      * @returns {Error} Unknown Error, 520
      */
     static unknownError() {
-        return new Error("Unknown Error", 520);
+        return new apiError("Unknown Error", 520);
     }
 
     /**
@@ -86,7 +86,7 @@ module.exports = class apiErrors {
      * @returns {Error} User Exists, 420
      */
     static userExists() {
-        return new Error("User Exists", 420);
+        return new apiError("User Exists", 420);
     }
 
 
