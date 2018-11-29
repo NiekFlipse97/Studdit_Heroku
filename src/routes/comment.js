@@ -23,12 +23,34 @@ router.post('/:threadId', (req, res) => {
     repo.createComment(threadId, req.user.username, content, res);
 });
 
+router.post('/react/:commentId', (req, res) => {
+    const commentId = req.params.commentId || '';
+    const username = req.user.username || '';
+    const content = req.body.content || '';
+
+    repo.reactToComment(username, content, commentId, res);
+});
+
 router.delete('/:threadId/:commentId', (req, res) => {
     const threadId = req.params.threadId;
     const commentId = req.params.commentId;
 
     repo.deleteComment(threadId, commentId, res)
 });
+
+router.put('/:id/upvote', (req, res) => {
+    const username = req.user.username || '';
+    const threadId = req.params.id || '';
+
+    repo.upvote(threadId, username, res);
+})
+
+router.put('/:id/downvote', (req, res) => {
+    const username = req.user.username || '';
+    const threadId = req.params.id || '';
+
+    repo.downvote(threadId, username, res); 
+})
 
 class CheckObjects {
     static isValidComment(object) {

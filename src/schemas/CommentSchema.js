@@ -6,14 +6,16 @@ const Schema = mongoose.Schema;
 // This is the reaction array.
 const CommentSchema = new Schema({
     content: String,
-    reaction: {
+    reactions: [{
         type: Schema.Types.ObjectId,
         ref: 'comment'
-    },
+    }],
     user: {
         type: Schema.Types.ObjectId,
         ref: 'user'
-    }
+    },
+    upvotes: Number,
+    downvotes: Number
 });
 
 // Create the comment collection with the CommentSchema.
