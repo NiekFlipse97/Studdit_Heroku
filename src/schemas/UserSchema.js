@@ -5,12 +5,8 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     username: String,
     password: String,
-    
+
     // A user can be friends with other users.
-    friends: [{
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-    }],
     threads: [{
         type: Schema.Types.ObjectId,
         ref: 'thread'

@@ -3,8 +3,6 @@ const User = require('../schemas/UserSchema');
 const ApiErrors = require('../errorMessages/apiErrors');
 const neo4j = require('neo4j-driver').v1;
 const config = require('../../config');
-
-//neo4j connection
 const driver = neo4j.driver('bolt://localhost:7687/', neo4j.auth.basic(config.neo4jUser, config.neo4jPassword));
 
 module.exports = class UserRepository {
@@ -15,7 +13,7 @@ module.exports = class UserRepository {
                     const newUser = new User({ username: username, email: email, password: password });
                     newUser.save()
                         .then(() => {
-                            var session = driver.session();
+                            const session = driver.session();
 
                             //create user in neo4j database
                             session
@@ -36,17 +34,11 @@ module.exports = class UserRepository {
                                     console.log(error);
                                 });
                         })
-                        .catch(() => {
-                            console.log('User: ' + newUser + ' has not successfully been created');
-                            response.status(500).json(ApiErrors.internalServerError());
-                        })
-                } else {
-                    response.status(420).json(ApiErrors.userExists());
-                }
+                        .catch(() => response.status(500).json(ApiErrors.internalServerError()))
+                } else response.status(420).json(ApiErrors.userExists());
             })
-            .catch(() => {
-                response.status(500).json(ApiErrors.internalServerError());
-            });
+            .catch(() => response.status(500).json(ApiErrors.internalServerError())
+            );
     };
 
     static login(username, password, response) {
@@ -91,11 +83,12 @@ module.exports = class UserRepository {
     static deleteUser(username, response){
         User.findOneAndDelete({username})
             .then(() => {
-                var session = driver.session();
+                const session = driver.session();
 
                 session
-                    .run(`MATCH (a:User { username: '${username}'}) DELETE a`)
+                    .run('MATCH (a:User { username: "' + username + '"}) DETACH DELETE a')
                     .then(function (result) {
+                        console.log(result);
                         result.records.forEach(function (record) {});
                         session.close();
 

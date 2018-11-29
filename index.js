@@ -36,6 +36,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/api', require('./src/routes/authentication'));
 app.use('/api/thread', require('./src/routes/thread'));
 app.use('/api/comment', require('./src/routes/comment'));
+app.use('/api/friend', require('./src/routes/friend'));
 
 
 module.exports = app;
