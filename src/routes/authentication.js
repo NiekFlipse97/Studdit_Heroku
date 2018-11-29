@@ -6,8 +6,6 @@ const Isemail = require('isemail');
 const repo = require('../dataAccess/userRepository');
 
 router.all(new RegExp("^(?!\/login$|\/register$).*"), (request, response, next) => {
-    console.log("Validate Token");
-
     // Get the token from the request header.
     const token = request.header('X-Access-Token');
 
@@ -86,7 +84,6 @@ class CheckObjects {
             object && typeof object == "object" &&
             object.username && typeof object.username == "string" &&
             object.password && typeof object.password == "string";
-        console.log(`Is login valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
     }
 
@@ -97,7 +94,6 @@ class CheckObjects {
             object.username && typeof object.username == "string" && object.username.length >= 2 &&
             object.email && typeof object.email == "string" && Isemail.validate(object.email) &&
             object.password && typeof object.password == "string";
-        console.log(`Is registration valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
     }
 
@@ -106,7 +102,6 @@ class CheckObjects {
             object && typeof object == "object" &&
             object.password && typeof object.password == "string" &&
             object.newPassword && typeof object.newPassword == "string";
-        console.log(`Is password change valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
     }
 }

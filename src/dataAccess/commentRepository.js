@@ -23,7 +23,6 @@ class CommentRepository {
                                 res.status(200).json({ message: "comment created and saved to the thread and user" })
                             })
                             .catch((error) => {
-                                console.log("In catch promise.all = " + error);
                                 res.status(error.code).json(error);
                             })
 
@@ -55,7 +54,6 @@ class CommentRepository {
      * @param {*} res The http response that is used to return status codes and json.
      */
     static reactToComment(username, content, commentId, res) {
-        console.log(commentId)
         User.findOne({username})
             .then((user) => {
                 Comment.findOne({_id: commentId})
@@ -67,13 +65,11 @@ class CommentRepository {
                                 upvotes: 0,
                                 downvotes: 0
                             })
-                            console.log(comment.reactions);
                             comment.reactions.push(reaction);
     
                             Promise.all([comment.save(), reaction.save()])
                                 .then(() => res.status(201).json({"message": "Reaction is created."}))
                                 .catch((error) => {
-                                    console.log(error);
                                     res.status(error.code).json(error)
                                 });
                         } else {
@@ -81,12 +77,10 @@ class CommentRepository {
                         }
                     })
                     .catch((error) => {
-                        console.log(error);
                         res.status(error.code).json(error)
                     });
             })
             .catch((error) => {
-                console.log(error);
                 res.status(error.code).json(error)
             });
     }
@@ -129,7 +123,6 @@ class CommentRepository {
                             }
                         })
                         .catch((error) => {
-                            console.log(error);
                             res.status(error.code).json(error);
                         })
                 }
@@ -150,7 +143,6 @@ class CommentRepository {
                             res.status(200).json({ "message": "Comment has been upvoted" })
                         })
                         .catch((error) => {
-                            console.log(error);
                             res.status(error.code).json(error);
                         })
                 } else {
@@ -158,7 +150,6 @@ class CommentRepository {
                 }
             })
             .catch((error) => {
-                console.log(error);
                 res.status(error.code).json(error);
             })
     }
@@ -201,7 +192,6 @@ class CommentRepository {
                             }
                         })
                         .catch((error) => {
-                            console.log(error);
                             res.status(error.code).json(error);
                         })
                 }
@@ -222,7 +212,6 @@ class CommentRepository {
                             res.status(200).json({ "message": "Comment has been downvoted" })
                         })
                         .catch((error) => {
-                            console.log(error);
                             res.status(error.code).json(error);
                         })
                 } else {
@@ -230,7 +219,6 @@ class CommentRepository {
                 }
             })
             .catch((error) => {
-                console.log(error);
                 res.status(error.code).json(error);
             })
     }

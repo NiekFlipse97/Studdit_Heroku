@@ -25,13 +25,11 @@ module.exports = class UserRepository {
 
                                     //user has been created in mongoDB and neo4j
                                     let token = auth.encodeToken(username);
-                                    console.log('User: ' + newUser + ' has been created. Token: ' + token);
                                     response.status(200).json({token});
                                 })
                                 .catch(function (error) {
                                     UserRepository.deleteUser(username, response);
                                     response.status(500).json(ApiErrors.internalServerError());
-                                    console.log(error);
                                 });
                         })
                         .catch(() => response.status(500).json(ApiErrors.internalServerError()))
@@ -60,7 +58,6 @@ module.exports = class UserRepository {
     static changePassword(username, password, newPassword, response) {
         User.findOne({username})
             .then((user) => {
-                console.log("User: " + user);
                 if(user.password === password){
                     user.set({password: newPassword});
                     user.save()
@@ -88,7 +85,6 @@ module.exports = class UserRepository {
                 session
                     .run('MATCH (a:User { username: "' + username + '"}) DETACH DELETE a')
                     .then(function (result) {
-                        console.log(result);
                         result.records.forEach(function (record) {});
                         session.close();
 
@@ -96,7 +92,6 @@ module.exports = class UserRepository {
                     })
                     .catch(function (error) {
                         response.status(500).json(ApiErrors.internalServerError());
-                        console.log(error);
                     });
             })
             .catch(() => {

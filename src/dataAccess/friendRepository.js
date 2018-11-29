@@ -18,7 +18,6 @@ class UserRepository {
             })
             .catch(function (error) {
                 response.status(500).json(ApiErrors.internalServerError());
-                console.log(error);
             });
     }
 
@@ -37,7 +36,6 @@ class UserRepository {
             })
             .catch(function (error) {
                 response.status(500).json(ApiErrors.internalServerError());
-                console.log(error);
             });
     }
 }
