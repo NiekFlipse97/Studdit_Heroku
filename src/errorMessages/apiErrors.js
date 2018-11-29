@@ -16,7 +16,7 @@ module.exports = class apiErrors {
      * @returns {Error} Invalid Token 498.
      */
     static noValidToken() {
-        return new apiErrors("Invalid Token", 498);
+        return new apiError("Invalid Token", 498);
     }
 
     /**
@@ -24,7 +24,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors} Conflict 409.
      */
     static conflict() {
-        return new apiErrors("Conflict", 409);
+        return new apiError("Conflict", 409);
     }
 
     /**
@@ -33,7 +33,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors} Bad Request 400.
      */
     static badRequest() {
-        return new apiErrors("Bad Request", 400);
+        return new apiError("Bad Request", 400);
     }
 
     /**
@@ -42,7 +42,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors} Forbidden 403.
      */
     static forbidden() {
-        return new apiErrors("Forbidden", 403);
+        return new apiError("Forbidden", 403);
     }
 
     /**
@@ -50,7 +50,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors}
      */
     static requestTimeout() {
-        return new apiErrors("Request Timeout", 408);
+        return new apiError("Request Timeout", 408);
     }
 
     /**
@@ -59,7 +59,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors}
      */
     static internalServerError() {
-        return new apiErrors("Internal Server Error", 500);
+        return new apiError("Internal Server Error", 500);
     }
 
     /**
@@ -68,7 +68,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors} Not Found, 404
      */
     static notFound() {
-        return new apiErrors("Not Found", 404);
+        return new apiError("Not Found", 404);
     }
 
     /**
@@ -77,7 +77,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors} Unknown apiErrors, 520
      */
     static unknownError() {
-        return new apiErrors("Unknown Error", 520);
+        return new apiError("Unknown Error", 520);
     }
 
     /**
@@ -86,7 +86,7 @@ module.exports = class apiErrors {
      * @returns {apiErrors} User Exists, 420
      */
     static userExists() {
-        return new apiErrors("User Exists", 420);
+        return new apiError("User Exists", 420);
     }
 
 

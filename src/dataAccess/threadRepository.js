@@ -26,7 +26,7 @@ class ThreadRepository {
                 res.status(200).json({ "threads": threadIds })
             })
             .catch((error) => {
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -71,7 +71,7 @@ class ThreadRepository {
             })
             .catch((error) => {
                 console.log(error);
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -107,7 +107,7 @@ class ThreadRepository {
             })
             .catch((error) => {
                 console.log("error van de get single thread with comments ==== " + error);
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -135,12 +135,12 @@ class ThreadRepository {
                     })
                     .catch((error) => {
                         console.log("In catch promise.all = " + error);
-                        res.status(error.code).json(error);
+                        res.status(500).json(error);
                     })
             })
             .catch((error) => {
                 console.log("In catch findOne for user === " + error);
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -160,7 +160,7 @@ class ThreadRepository {
                                     console.log('threads removed from user.')
                                 })
                                 .catch((error) => {
-                                    res.status(error.code).json(error);
+                                    res.status(500).json(error);
                                 })
                         })
                     res.status(200).json({ message: "thread removed" });
@@ -169,8 +169,7 @@ class ThreadRepository {
                 }
             })
             .catch((error) => {
-                console.log(error);
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -190,12 +189,12 @@ class ThreadRepository {
                     })
                     .catch((error) => {
                         console.log('Oops something went wrong wile saving the updated thread: ' + error)
-                        res.status(error.code).json(error);
+                        res.status(500).json(error);
                     });
             })
             .catch((error) => {
                 console.log("Oops something went wrong while finding the thread.");
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -238,7 +237,7 @@ class ThreadRepository {
                         })
                         .catch((error) => {
                             console.log(error);
-                            res.status(error.code).json(error);
+                            res.status(500).json(error);
                         })
                 }
 
@@ -259,7 +258,7 @@ class ThreadRepository {
                         })
                         .catch((error) => {
                             console.log(error);
-                            res.status(error.code).json(error);
+                            res.status(500).json(error);
                         })
                 } else {
                     res.status(403).json({ "message": "You already upvoted this thread" });
@@ -267,7 +266,7 @@ class ThreadRepository {
             })
             .catch((error) => {
                 console.log(error);
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 
@@ -310,7 +309,7 @@ class ThreadRepository {
                         })
                         .catch((error) => {
                             console.log(error);
-                            res.status(error.code).json(error);
+                            res.status(500).json(error);
                         })
                 }
 
@@ -331,7 +330,7 @@ class ThreadRepository {
                         })
                         .catch((error) => {
                             console.log(error);
-                            res.status(error.code).json(error);
+                            res.status(500).json(error);
                         })
                 } else {
                     res.status(403).json({ "message": "You already downvoted this thread" });
@@ -339,7 +338,7 @@ class ThreadRepository {
             })
             .catch((error) => {
                 console.log(error);
-                res.status(error.code).json(error);
+                res.status(500).json(error);
             })
     }
 }
