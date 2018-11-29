@@ -62,6 +62,11 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Get a single thread with all nested comments and the username of the user who created the post.
+     * @param {*} threadId The id of the thread that will be returned.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static getSingleThreadWithComments(threadId, res) {
         User.find({})
             .populate({
@@ -156,6 +161,12 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Update a single thread by it's id.
+     * @param {*} threadId The id of the thread that will be updated.
+     * @param {*} newContent The new content of the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static updateThread(threadId, newContent, res) {
         Thread.findOne({ _id: threadId })
             .then((thread) => {
@@ -175,6 +186,13 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Upvote a signle thread. If the same thread is downvote by the same user,
+     * This downvote will be changed to a upvote.
+     * @param {*} threadId The id of the thread that will be upvoted.
+     * @param {*} username The username of the user that upvotes the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static upvote(threadId, username, res) {
         User.findOne({ username })
             .then((user) => {
@@ -240,6 +258,13 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Downvote a single thread. If the same thread is upvoted by the same user,
+     * This upvote will be changed to a downvote.
+     * @param {*} threadId The id of the thread that will be downvoted.
+     * @param {*} username The username of the user that upvotes the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static downvote(threadId, username, res) {
         User.findOne({ username })
             .then((user) => {
