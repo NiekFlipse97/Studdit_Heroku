@@ -34,7 +34,7 @@ class ThreadRepository {
      * Get all the thread with the corresponding username, upvotes and downvotes.
      * @param {*} res The http response that is used to return status codes and json.
      */
-    static getAllThreads(res) {
+    static getAllThreads(sortStyle, res) {
         let responseObject = [];
 
         User.find({})
@@ -54,6 +54,19 @@ class ThreadRepository {
                         }
                     }
                 }
+
+                if (sortStyle === 'upvotes') {
+                    responseObject.sort(function (a, b) {
+                        console.log(a.upvotes, b.upvotes)
+                        return parseInt(b.upvotes) - parseInt(a.upvotes)
+                    });
+                } else if (sortStyle === 'difference') {
+                    responseObject.sort(function (a, b) {
+                        console.log(a.upvotes, b.upvotes)
+                        return parseInt(b.upvotes - b.downvotes) - parseInt(a.upvotes - a.downvotes)
+                    });
+                }
+
                 res.status(200).json({ "threads": responseObject });
             })
             .catch((error) => {
@@ -62,6 +75,11 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Get a single thread with all nested comments and the username of the user who created the post.
+     * @param {*} threadId The id of the thread that will be returned.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static getSingleThreadWithComments(threadId, res) {
         User.find({})
             .populate({
@@ -156,6 +174,12 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Update a single thread by it's id.
+     * @param {*} threadId The id of the thread that will be updated.
+     * @param {*} newContent The new content of the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static updateThread(threadId, newContent, res) {
         Thread.findOne({ _id: threadId })
             .then((thread) => {
@@ -175,14 +199,47 @@ class ThreadRepository {
             })
     }
 
+    /**
+     * Upvote a signle thread. If the same thread is downvote by the same user,
+     * This downvote will be changed to a upvote.
+     * @param {*} threadId The id of the thread that will be upvoted.
+     * @param {*} username The username of the user that upvotes the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
     static upvote(threadId, username, res) {
         User.findOne({ username })
             .then((user) => {
                 let isUpvoted = false;
+                let isDownvoted = false;
                 for (let vote of user.upvoted) {
                     if (vote == threadId) {
                         isUpvoted = true;
                     }
+                }
+
+                for (let vote of user.downvoted) {
+                    if (vote == threadId) {
+                        isDownvoted = true;
+                    }
+                }
+
+                if (isDownvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { downvotes: -1 } })
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                var index = user.downvoted.indexOf(threadId);
+                                if (index >= 0) {
+                                    user.downvoted.splice(index, 1);
+                                }
+                            } else {
+                                console.log('Thread is null or undefined')
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
                 }
 
                 if (!isUpvoted) {
@@ -206,6 +263,78 @@ class ThreadRepository {
                         })
                 } else {
                     res.status(403).json({ "message": "You already upvoted this thread" });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(error.code).json(error);
+            })
+    }
+
+    /**
+     * Downvote a single thread. If the same thread is upvoted by the same user,
+     * This upvote will be changed to a downvote.
+     * @param {*} threadId The id of the thread that will be downvoted.
+     * @param {*} username The username of the user that upvotes the thread.
+     * @param {*} res The http response that is used to return status codes and json.
+     */
+    static downvote(threadId, username, res) {
+        User.findOne({ username })
+            .then((user) => {
+                let isDownvoted = false;
+                let isUpvoted = false;
+                for (let vote of user.downvoted) {
+                    if (vote == threadId) {
+                        isDownvoted = true;
+                    }
+                }
+
+                for (let vote of user.upvoted) {
+                    if (vote == threadId) {
+                        isUpvoted = true;
+                    }
+                }
+
+                if (isUpvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { upvotes: -1 } })
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                var index = user.upvoted.indexOf(threadId);
+                                if (index >= 0) {
+                                    user.upvoted.splice(index, 1);
+                                }
+                            } else {
+                                console.log('Thread is null or undefined')
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
+                }
+
+                if (!isDownvoted) {
+                    Thread.update({ _id: threadId }, { $inc: { downvotes: 1 } })
+                        .then(() => Thread.findOne({ _id: threadId }))
+                        .then((thread) => {
+                            if (thread) {
+                                user.downvoted.push(threadId)
+
+                                return user.save()
+                            } else {
+                                res.status(404).json(ApiErrors.notFound())
+                            }
+                        })
+                        .then(() => {
+                            res.status(200).json({ "message": "Thread has been downvoted" })
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            res.status(error.code).json(error);
+                        })
+                } else {
+                    res.status(403).json({ "message": "You already downvoted this thread" });
                 }
             })
             .catch((error) => {
