@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const index = require('../index');
 const moment = require('moment');
+const mongoose = require('mongoose');
 
 chai.should();
 chai.use(chaiHttp);
@@ -114,71 +115,62 @@ describe('Registration', () => {
 
 
 describe('Login', () => {
+    let token = '';
 
-    // it('should return a token when providing valid information', (done) => {
-    //     chai.request(index)
-    //         .post('/api/login')
-    //         .send({
-    //             email: "test@test.com",
-    //             password: `T3st-${datetime}`
-    //         })
-    //         .end((err, res) => {
-    //             res.should.have.status(200);
-    //             res.body.should.be.a('object');
-    //             res.body.should.have.property('token');
-    //             done()
-    //         });
-    // });
-    //
-    // it('should throw an error when email does not exist', (done) => {
-    //     chai.request(index)
-    //         .post('/api/login')
-    //         .send({
-    //             email: "abcdefghijklmnopqrstuvwxyz@1234567890.ab",
-    //             password: `T3st-${datetime}`
-    //         })
-    //         .end((err, res) => {
-    //             res.should.not.have.status(200);
-    //             res.body.should.be.a('object');
-    //             res.body.should.have.property('message');
-    //             res.body.should.have.property('code');
-    //             res.body.should.have.property('datetime');
-    //             done()
-    //         });
-    // });
-    //
-    // it('should throw an error when email exists but password is invalid', (done) => {
-    //     chai.request(index)
-    //         .post('/api/login')
-    //         .send({
-    //             email: "test@test.com",
-    //             password: `T3sting-${datetime}`
-    //         })
-    //         .end((err, res) => {
-    //             res.should.not.have.status(200);
-    //             res.body.should.be.a('object');
-    //             res.body.should.have.property('message');
-    //             res.body.should.have.property('code');
-    //             res.body.should.have.property('datetime');
-    //             done()
-    //         });
-    // });
-    //
-    // it('should throw an error when using an invalid email', (done) => {
-    //     chai.request(index)
-    //         .post('/api/login')
-    //         .send({
-    //             email: "blablab1234",
-    //             password: `T3st-${datetime}`
-    //         })
-    //         .end((err, res) => {
-    //             res.should.not.have.status(200);
-    //             res.body.should.be.a('object');
-    //             res.body.should.have.property('message');
-    //             res.body.should.have.property('code');
-    //             res.body.should.have.property('datetime');
-    //             done()
-    //         });
-    // });
+    before((done) => {
+        chai.request(index)
+            .post('/api/register')
+            .set('Content-Type', 'application/json')
+            .send({
+                username: "TEST",
+                email: "test@test.com",
+                password: "TEST!123"
+            })
+            .end((err, res) => {
+                if (err) console.log("Error: " + err);
+                if (res) {
+                    console.log("The test user has been created");
+                    token = res.body.token;
+                }
+                done();
+            });
+    });
 
+    it('should return a token when providing valid information', (done) => {
+        chai.request(index)
+        .post('/api/login')
+        .set('Content-Type', 'application/json')
+        .send({
+            username: "TEST",
+            password: "TEST!123"
+        })
+        .end((err, res) => {
+            if (err) console.log("Error: " + err);
+            if (res) {
+                console.log("The test user has been created");
+                token = res.body.token;
+
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('token');
+            }
+            done();
+        });
+    });
+
+    after((done) => {
+        mongoose.connection.collections.threads.drop(() => {
+            chai.request(index)
+                .delete('/api/user')
+                .set('X-Access-Token', token)
+                .end((err, res) => {
+                    if (err) console.log("Error: " + err);
+                    if (res) {
+                        console.log("The test user has been deleted");
+                        token = res.body.token;
+                    }
+                    done();
+                });
+        })
+    })
 });

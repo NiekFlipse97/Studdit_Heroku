@@ -3,10 +3,6 @@ const router = express.Router();
 const apiErrors = require("../errorMessages/apiErrors.js");
 const repo = require('../dataAccess/friendRepository');
 
-router.get('/', (req, res) => {
-
-});
-
 router.delete('/', (req, res) => {
     const newFriend = req.body;
 
@@ -40,7 +36,6 @@ class CheckObjects {
         const tmp =
             object && typeof object == "object" &&
             object.usernameFriend && typeof object.usernameFriend == "string";
-        console.log(`Is comment valid: ${tmp == undefined ? false : tmp}`);
         return tmp == undefined ? false : tmp;
     }
 }
