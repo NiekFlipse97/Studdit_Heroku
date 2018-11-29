@@ -10,9 +10,13 @@ router.get('/', (req, res) => {
     ThreadRepository.getAllThreadsForSingleUser(username, res);
 });
 
-router.get('/all', (req, res) => {
-    ThreadRepository.getAllThreads(res);
+router.get('/all/:sort?', (req, res) => {
+    const sortStyle = req.params.sort || '';
+
+    ThreadRepository.getAllThreads(sortStyle, res);
 })
+
+
 
 router.get('/:id', (req, res) => {
     const threadId = req.params.id || '';

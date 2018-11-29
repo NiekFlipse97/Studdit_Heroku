@@ -34,7 +34,7 @@ class ThreadRepository {
      * Get all the thread with the corresponding username, upvotes and downvotes.
      * @param {*} res The http response that is used to return status codes and json.
      */
-    static getAllThreads(res) {
+    static getAllThreads(sortStyle, res) {
         let responseObject = [];
 
         User.find({})
@@ -54,6 +54,19 @@ class ThreadRepository {
                         }
                     }
                 }
+
+                if (sortStyle === 'upvotes') {
+                    responseObject.sort(function (a, b) {
+                        console.log(a.upvotes, b.upvotes)
+                        return parseInt(b.upvotes) - parseInt(a.upvotes)
+                    });
+                } else if (sortStyle === 'difference') {
+                    responseObject.sort(function (a, b) {
+                        console.log(a.upvotes, b.upvotes)
+                        return parseInt(b.upvotes - b.downvotes) - parseInt(a.upvotes - a.downvotes)
+                    });
+                }
+
                 res.status(200).json({ "threads": responseObject });
             })
             .catch((error) => {
