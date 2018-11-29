@@ -16,77 +16,77 @@ module.exports = class apiErrors {
      * @returns {Error} Invalid Token 498.
      */
     static noValidToken() {
-        return new Error("Invalid Token", 498);
+        return new apiErrors("Invalid Token", 498);
     }
 
     /**
      * Indicates that the request could not be processed because of conflict in the request
-     * @returns {Error} Conflict 409.
+     * @returns {apiErrors} Conflict 409.
      */
     static conflict() {
-        return new Error("Conflict", 409);
+        return new apiErrors("Conflict", 409);
     }
 
     /**
-     * The server cannot or will not process the request due to an apparent client error
+     * The server cannot or will not process the request due to an apparent client apiErrors
      * e.g., malformed request syntax, size too large, invalid request message framing, or deceptive request routing).
-     * @returns {Error} Bad Request 400.
+     * @returns {apiErrors} Bad Request 400.
      */
     static badRequest() {
-        return new Error("Bad Request", 400);
+        return new apiErrors("Bad Request", 400);
     }
 
     /**
      * The request was valid, but the server is refusing action.
      * The user might not have the necessary permissions for a resource, or may need an account of some sort.
-     * @returns {Error} Forbidden 403.
+     * @returns {apiErrors} Forbidden 403.
      */
     static forbidden() {
-        return new Error("Forbidden", 403);
+        return new apiErrors("Forbidden", 403);
     }
 
     /**
      *
-     * @returns {Error}
+     * @returns {apiErrors}
      */
     static requestTimeout() {
-        return new Error("Request Timeout", 408);
+        return new apiErrors("Request Timeout", 408);
     }
 
     /**
-     * A generic error message,
+     * A generic apiErrors message,
      * given when an unexpected condition was encountered and no more specific message is suitable.
-     * @returns {Error}
+     * @returns {apiErrors}
      */
     static internalServerError() {
-        return new Error("Internal Server Error", 500);
+        return new apiErrors("Internal Server Error", 500);
     }
 
     /**
      * The requested resource could not be found but may be available in the future.
      * Subsequent requests by the client are permissible.
-     * @returns {Error} Not Found, 404
+     * @returns {apiErrors} Not Found, 404
      */
     static notFound() {
-        return new Error("Not Found", 404);
+        return new apiErrors("Not Found", 404);
     }
 
     /**
-     * The 520 error is used as a "catch-all response for when the origin server returns something unexpected",
+     * The 520 apiErrors is used as a "catch-all response for when the origin server returns something unexpected",
      * listing connection resets, large headers, and empty or invalid responses as common triggers.
-     * @returns {Error} Unknown Error, 520
+     * @returns {apiErrors} Unknown apiErrors, 520
      */
     static unknownError() {
-        return new Error("Unknown Error", 520);
+        return new apiErrors("Unknown Error", 520);
     }
 
     /**
      * Unofficial HTTP Response.
      * This response is self reclaimed.
-     * @returns {Error} User Exists, 420
+     * @returns {apiErrors} User Exists, 420
      */
     static userExists() {
-        return new Error("User Exists", 420);
+        return new apiErrors("User Exists", 420);
     }
 
 
