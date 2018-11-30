@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon --exec mocha",
-    "start": "node index.js"
+    "test": "set NODE_ENV=test&& nodemon --exec mocha",
+    "start": "set NODE_ENV=production&& node index.js",
+    "testCloud": "set NODE_ENV=testCloud&& nodemon --exec mocha --recursive -R min"
+  },
+  "engines": {
+    "node": "8.11.1"
   },
   "repository": {
     "type": "git",
